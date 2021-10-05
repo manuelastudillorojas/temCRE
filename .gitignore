@@ -1,2 +1,3 @@
 node_modules/
-mastudillo.pem/
+backend/mastudillo.pem
+front/mastudillo.pem
