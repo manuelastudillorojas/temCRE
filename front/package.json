@@ -1,0 +1,16 @@
+{
+  "name": "front",
+  "version": "1.0.0",
+  "description": "",
+  "main": "front.js",
+  "scripts": {
+    "test": "node"
+  },
+  "author": "nadie",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "newrelic": "^8.4.0",
+    "request": "^2.88.2"
+  }
+}

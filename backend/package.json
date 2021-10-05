@@ -1,0 +1,16 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "dummy",
+  "main": "api.js",
+  "scripts": {
+    "test": "node"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "grok-js": "^3.3.1",
+    "simple-ssh": "^1.0.0"
+  }
+}
