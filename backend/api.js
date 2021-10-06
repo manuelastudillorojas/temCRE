@@ -71,40 +71,40 @@ ssh.exec("df | tail +2", {
 exit: function() {
 
 require('grok-js').loadDefault((err, patterns) => {
-if (err) {
-console.error(err);
-return;
-
-}
-const pattern = patterns.createPattern(p);
-
-let indice = ourout
-const todaslaslineas = indice.split(/\n/g);
-let obj1 = [];
-
-let c=0;
-
-todaslaslineas.forEach((unalinea) =>
-  {
-    let indice = unalinea.split(/,/);
-    obj1 = indice;
-
-pattern.parse(indice, (err, obj) => {
   if (err) {
   console.error(err);
   return;
+
   }
+  const pattern = patterns.createPattern(p);
+
+  let indice = ourout
+  const todaslaslineas = indice.split(/\n/g);
+  let obj1 = [];
+
+  let c=0;
+
+  todaslaslineas.forEach((unalinea) =>
+    {
+      let indice = unalinea.split(/,/);
+      obj1 = indice;
+
+      pattern.parse(indice, (err, obj) => {
+        if (err) {
+        console.error(err);
+        return;
+        }
+        
+        detalle.push(obj);
+    //console.log('detalle', detalle);
   
-  detalle.push(obj);
-  //console.log('detalle', detalle);
- 
-});
+  });
 
 
-});
+  });
 
 
-res.json(detalle);
+  res.json(detalle);
 
 });
 },
@@ -125,73 +125,5 @@ console.log(e);
 });
 })
 
-
-app.get('/api/df', function(req, res) {
-  const pemfile = 'mastudillo.pem';
-  const user = 'ubuntu';
-  const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
-  const p = '%{DATA:mount}%{SPACE}%{NUMBER:tamano}%{SPACE}%{NUMBER:usado}%{SPACE}%{NUMBER:disp}%{SPACE}%{NUMBER:usadoperc}%{NOTSPACE}%{SPACE}%{UNIXPATH:fs}';
-
-  const ssh = new SSH({
-  host: host,
-  user: user,
-  key: fs.readFileSync(pemfile)
-  });
-
-  let ourout = "";
-  ssh.exec("df | tail +2", {
-  exit: function() {
-
-  require('grok-js').loadDefault((err, patterns) => {
-  if (err) {
-    console.error(err);
-    return;
-
-  }
-  const pattern = patterns.createPattern(p);
-
-  let indice = ourout
-  const todaslaslineas = indice.split(/\n/g);
-  let obj1 = [];
-
-  let c=0;
-
-  todaslaslineas.forEach((unalinea) =>
-  {
-
-    
-      let indice = unalinea.split(/,/);
-      obj1 = indice;
-
-    pattern.parse(indice, (err, obj) => {
-      if (err) {
-      console.error(err);
-      return;
-      }
-      
-      detalle.push(obj);
-      //console.log('detalle', detalle);
-      });
-
-    });
-
-    res.json(detalle);
-
-  });
-  },
-  out: function(stdout) {
-  ourout += stdout;
-
-  }
-  }).start({
-  success: function() {
-  
-  },
-  fail: function(e) {
-  console.log("failed connection, boo");
-  console.log(e);
-  }
-  });
-})
 // iniciamos nuestro servidor
 app.listen(port)
