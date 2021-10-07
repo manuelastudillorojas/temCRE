@@ -125,5 +125,131 @@ console.log(e);
 });
 })
 
+
+app.get('/api/memoria', function(req, res) {
+
+  const pemfile = 'mastudillo.pem';
+  const user = 'ubuntu';
+  const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
+  const p = '%{BASE16NUM:total} %{BASE16NUM:used} %{BASE16NUM:free} %{BASE16NUM:shared} %{BASE16NUM:buffcache}';
+  const ssh = new SSH({
+  
+    host: host,
+    user: user,
+    key: fs.readFileSync(pemfile)
+  
+  });
+  
+  let ourout = "";
+  
+  ssh.exec("free -m | tail -n 3 | awk '{ print $1 "+ ' " "'+ " $2 "+ ' " "'+ " $3 "+ ' " "'+ " $4 "+ ' " "'+ " $5 "+ ' " "'+ " $6 }'", {
+  
+  exit: function() {
+  
+    console.log('3:', ourout);
+    require('grok-js').loadDefault((err, patterns) => {
+  
+  if (err) {
+  
+    console.error(err);
+  
+  return;
+  
+  }
+  
+    const pattern = patterns.createPattern(p);
+    
+    pattern.parse(ourout, (err, obj) => {
+    
+    if (err) {
+    
+    console.error(err);
+    
+    return;
+    
+    }
+    
+    console.log('PARSEO', obj);
+    
+    res.json(obj);
+    
+    });
+  
+  });
+  
+  },
+  
+  out: function(stdout) {
+  
+  ourout += stdout;
+  
+  }
+  
+  }).start({
+  
+  success: function() {
+  
+  },
+  
+  fail: function(e) {
+  
+  console.log("failed connection, boo");
+  
+  console.log(e);
+  
+  }
+  
+  });
+  
+  })
+
+  app.get('/api/up', function(req, res) {
+    const pemfile = 'mastudillo.pem';
+    const user = 'ubuntu';
+    const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
+    //const p = '%{TIME:hora}%{SPACE}%{WORD:estado}%{SPACE}%{NUMBER:idle}:%{NUMBER:idle}%{GREEDYDATA:metricas}';
+    const p ='%{TIME:hora}%{SPACE}%{WORD:updown}%{SPACE}%{DATA:uptime},%{SPACE}%{DATA:usuarios},%{SPACE}%{DATA}:%{SPACE}%{NOTSPACE:unmin},%{SPACE}%{NOTSPACE:cinmin},%{SPACE}%{NOTSPACE:quinmin}';
+    const ssh = new SSH({
+    host: host,
+    user: user,
+    key: fs.readFileSync(pemfile)
+    });
+    
+    let ourout = "";
+    ssh.exec("uptime" , {
+    exit: function() {
+    console.log('3:', ourout);
+    require('grok-js').loadDefault((err, patterns) => {
+    if (err) {
+    console.error(err);
+    return;
+    }
+    const pattern = patterns.createPattern(p);
+    pattern.parse(ourout, (err, obj) => {
+    if (err) {
+    console.error(err);
+    return;
+    }
+    console.log('PARSEO', obj);
+    res.json(
+    obj
+    );
+    });
+    });
+    },
+    out: function(stdout) {
+    ourout += stdout;
+    }
+    }).start({
+    success: function() {
+    },
+    fail: function(e) {
+    console.log("failed connection, boo");
+    console.log(e);
+    }
+    });
+    })
+
+
 // iniciamos nuestro servidor
 app.listen(port)
