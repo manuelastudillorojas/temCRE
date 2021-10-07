@@ -1,16 +1,30 @@
+require('dotenv').config()
+
 const { Console } = require('console');
+
 var express = require('express') //llamamos a Express
 var app = express()
 const fs = require('fs')
 const SSH = require('simple-ssh');
 var port = process.env.PORT || 3000 // establecemos nuestro puerto
+let detalle = [];
 
-
+// Constantes  para las direcciones de servidores y llaves de accesos
+const hostJose = process.env.HOST_JOSE;
+const hostManuel = process.env.HOST_MANUEL;
+const hostReinier = process.env.HOST_REINIER;
+const hostIvan = process.env.HOST_IVAN;
+const pemfile = process.env.PEMFIRE; // key para ingresar a AWS
+const patronCPU = process.env.PATRON_CPU;
+const patronDF = process.env.PATRON_DF;
+const patronMemoria = process.env.PATRON_MEMORIA;
+const patronUP =  process.env.PATRON_UP;
+console.log(hostJose);
 app.get('/api/cpu', function(req, res) {
-      const pemfile = 'mastudillo.pem';
+  
       const user = 'ubuntu';
-      const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
-      const p = '%{NUMBER:usr}%{SPACE}%{NUMBER:sys}%{SPACE}%{NUMBER:idle}';
+      const host = hostManuel;
+      const p = patronCPU;
 
   const ssh = new SSH({
   host: host,
@@ -55,10 +69,10 @@ app.get('/api/cpu', function(req, res) {
 
 
 app.get('/api/df', function(req, res) {
-  const pemfile = 'mastudillo.pem';
+  
   const user = 'ubuntu';
-  const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
-  const p = '%{DATA:mount}%{SPACE}%{NUMBER:tamano}%{SPACE}%{NUMBER:usado}%{SPACE}%{NUMBER:disp}%{SPACE}%{NUMBER:usadoperc}%{NOTSPACE}%{SPACE}%{UNIXPATH:fs}';
+  const host = hostManuel;
+  const p = patronDF;
 
   const ssh = new SSH({
   host: host,
@@ -128,10 +142,10 @@ console.log(e);
 
 app.get('/api/memoria', function(req, res) {
 
-  const pemfile = 'mastudillo.pem';
+
   const user = 'ubuntu';
-  const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
-  const p = '%{BASE16NUM:total} %{BASE16NUM:used} %{BASE16NUM:free} %{BASE16NUM:shared} %{BASE16NUM:buffcache}';
+  const host = hostManuel;
+  const p = patronMemoria;
   const ssh = new SSH({
   
     host: host,
@@ -204,11 +218,11 @@ app.get('/api/memoria', function(req, res) {
   })
 
   app.get('/api/up', function(req, res) {
-    const pemfile = 'mastudillo.pem';
+  
     const user = 'ubuntu';
-    const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
+    const host = hostManuel;
     //const p = '%{TIME:hora}%{SPACE}%{WORD:estado}%{SPACE}%{NUMBER:idle}:%{NUMBER:idle}%{GREEDYDATA:metricas}';
-    const p ='%{TIME:hora}%{SPACE}%{WORD:updown}%{SPACE}%{DATA:uptime},%{SPACE}%{DATA:usuarios},%{SPACE}%{DATA}:%{SPACE}%{NOTSPACE:unmin},%{SPACE}%{NOTSPACE:cinmin},%{SPACE}%{NOTSPACE:quinmin}';
+    const p =patronUP;
     const ssh = new SSH({
     host: host,
     user: user,

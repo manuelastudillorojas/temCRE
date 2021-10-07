@@ -1,10 +1,20 @@
 //require('newrelic');
 
+require('dotenv').config()
+let detalle = [];
 var express = require('express') //llamamos a Express
 var app = express()
 var port = process.env.PORT || 3001 // establecemos nuestro puerto
 
+// Constantes  para las direcciones de servidores y llaves de accesos
+const hostJose = process.env.HOST_JOSE;
+const hostManuel = process.env.HOST_MANUEL;
+const hostReinier = process.env.HOST_REINIER;
+const hostIvan = process.env.HOST_IVAN;
+const insertKey = process.env.INSERT_KEY;
+console.log(hostIvan);
 app.get('/consultacpu', function(req, res) {
+    
     const request = require('request');
     var options = {
     url: 'http://localhost:3000/api/cpu',
@@ -23,30 +33,30 @@ app.get('/consultacpu', function(req, res) {
     );
     function insertViolationEvent(violation) {
    
-
+        console.log('key '+insertKey)
     var headers = {
         'Content-Type': 'json/application',
-        'X-Insert-Key': '812744935a47996068ade6ccab1bb6858084NRAL'
+        'X-Insert-Key': insertKey
     };
     var options = {
         url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',
         headers: headers
     }
-    const host = 'ec2-3-138-101-218.us-east-2.compute.amazonaws.com';
+    
     options['body'] = JSON.stringify(
     {
 
-        'eventType': 'ManoloPrueba1',
+        'eventType': 'ManoloPrueba',
         'usr': Number(violation.usr),
-        'host': host,
+        'host': hostManuel,
         'sys': Number(violation.sys),
         'idle': Number(violation.idle),
        
     });
-
+   
     console.log('DATOS ENVIADOS A NEWRELIC:'+options);
     request.post(options);
-
+    
 
 
     }
@@ -83,7 +93,7 @@ app.get('/consultadf', function(req, res) {
     function insertViolationEvent(violation) {
         var headers = {
         'Content-Type': 'json/application',
-        'X-Insert-Key': '812744935a47996068ade6ccab1bb6858084NRAL'
+        'X-Insert-Key': insertKey
         };
 
         var options = {
@@ -93,12 +103,12 @@ app.get('/consultadf', function(req, res) {
         headers: headers
 
         }
-        const host = 'ec2-52-15-76-219.us-east-2.compute.amazonaws.com';
+       
         options['body'] = JSON.stringify(
 
             {
                 'eventType': 'JoseDF',
-                'host': host,
+                'host': hostManuel,
                 'mount': violation.mount,
                 'tamano': Number(violation.tamano),
                 'usado': Number(violation.usado),
@@ -138,7 +148,7 @@ app.get('/consultamemoria', function(req, res) {
         
         'Content-Type': 'json/application',
         
-        'X-Insert-Key': '812744935a47996068ade6ccab1bb6858084NRAL'
+        'X-Insert-Key': insertKey
         
         };
         var options = {
@@ -148,13 +158,12 @@ app.get('/consultamemoria', function(req, res) {
             headers: headers
         
         }
-        const host = 'ec2-18-223-187-141.us-east-2.compute.amazonaws.com';
         options['body'] = JSON.stringify(
         
             {
             
             'eventType': 'ReinierMem',
-            'host': host,
+            'host': hostManuel,
             'total': Number(violation.total),
             'used': Number(violation.used),
             'free': Number(violation.free),
@@ -178,28 +187,28 @@ app.get('/consultamemoria', function(req, res) {
 
 
  app.get('/consultaup', function(req, res) {    const request = require('request');    
-var options = {    url: 'http://localhost:3000/api/up',    };    
-var violations = null;    // Get open violations    
-request.get(options,    
-    function(err, response, body) {        
-        if (response.statusCode == 200) {            
-            var data = JSON.parse(body);            
-violations = data;            
-
-insertViolationEvent(violations);     
-             }  
-  }  
+    var options = {    url: 'http://localhost:3000/api/up',    };    
+    var violations = null;    // Get open violations    
+    request.get(options,    
+        function(err, response, body) {        
+            if (response.statusCode == 200) {            
+                var data = JSON.parse(body);            
+                violations = data;            
+                insertViolationEvent(violations);     
+             }  
+        }  
   ); 
 function insertViolationEvent(violation) {       
     var headers = {
          'Content-Type': 'json/application', 
-         'X-Insert-Key': '812744935a47996068ade6ccab1bb6858084NRAL' 
+         'X-Insert-Key': insertKey 
        };
     var options = {       
      url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',       
      headers: headers    }  
      options['body'] = JSON.stringify(    {   
              'eventType': 'PruebaIvan',
+             'host':hostManuel,
     	     'hora':violation.hora,
              'updown':violation.updown,
              'uptime':violation.uptime,

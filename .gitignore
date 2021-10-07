@@ -1,3 +1,4 @@
 node_modules/
 backend/mastudillo.pem
 front/mastudillo.pem
+config/
