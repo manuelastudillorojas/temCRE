@@ -1,21 +1,32 @@
-//require('newrelic');
-
 require('dotenv').config()
-let detalle = [];
-var express = require('express') //llamamos a Express
-var app = express()
-var port = process.env.PORT || 3001 // establecemos nuestro puerto
+var CronJob = require('cron').CronJob;
+const request = require('request');
 
-// Constantes  para las direcciones de servidores y llaves de accesos
 const hostJose = process.env.HOST_JOSE;
 const hostManuel = process.env.HOST_MANUEL;
 const hostReinier = process.env.HOST_REINIER;
 const hostIvan = process.env.HOST_IVAN;
 const insertKey = process.env.INSERT_KEY;
 
-app.get('/consultacpu', function(req, res) {
+//var job = new CronJob('* * * * *', function() {
+
+var job = new CronJob('* * * * *', function() {
+
+    console.log('INICIANDO SECUENCIA DE DATOS');
+
+    getCpu();
+    getConsultaDF();
+    consultaMemoria();
+    consultaUP();
+
+}, null, true, 'America/Santiago');
+
+job.start();
+
+
+
+function getCpu() {
     
-    const request = require('request');
     var options = {
     url: 'http://localhost:3000/api/cpu',
     };
@@ -45,7 +56,6 @@ app.get('/consultacpu', function(req, res) {
     
     options['body'] = JSON.stringify(
     {
-
         'eventType': 'ManoloPrueba',
         'usr': Number(violation.usr),
         'host': hostManuel,
@@ -54,17 +64,15 @@ app.get('/consultacpu', function(req, res) {
        
     });
    
-    console.log('DATOS ENVIADOS A NEWRELIC:'+options);
+    console.log('DATOS ENVIADOS A NEWRELIC Manuel:'+options);
     request.post(options);
     
 
 
     }
-})
+}
+function getConsultaDF() {
 
-
-app.get('/consultadf', function(req, res) {
-    const request = require('request');
     var options = {
         url: 'http://localhost:3000/api/df',
     };
@@ -80,28 +88,20 @@ app.get('/consultadf', function(req, res) {
                     //console.log(violations[i]);
                     if(violations[i]!== null){
                         insertViolationEvent(violations[i]);
-                    }
-                
+                    }   
                 }
-
-
             }
-
         }
     );
 
     function insertViolationEvent(violation) {
         var headers = {
-        'Content-Type': 'json/application',
-        'X-Insert-Key': insertKey
+            'Content-Type': 'json/application',
+            'X-Insert-Key': insertKey
         };
-
         var options = {
-
-        url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',
-
-        headers: headers
-
+            url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',
+            headers: headers
         }
        
         options['body'] = JSON.stringify(
@@ -117,15 +117,14 @@ app.get('/consultadf', function(req, res) {
                 'fs': violation.fs,
             }
         );
-        console.log('DATOS ENVIADOS A NEWRELIC:'+options);
+        console.log('DATOS ENVIADOS A NEWRELIC Jose:'+options);
         request.post(options);
     } 
 
-})
+}
 
-app.get('/consultamemoria', function(req, res) {
+function consultaMemoria(){
 
-    const request = require('request');
     var options = {
         url: 'http://localhost:3000/api/memoria',
     };
@@ -161,66 +160,62 @@ app.get('/consultamemoria', function(req, res) {
         options['body'] = JSON.stringify(
         
             {
-            
-            'eventType': 'ReinierMem',
-            'host': hostManuel,
-            'total': Number(violation.total),
-            'used': Number(violation.used),
-            'free': Number(violation.free),
-            'shared': Number(violation.shared),
-            'buffcache': Number(violation.buffercache),
-            'available': Number(violation.available),
-            
+                'eventType': 'ReinierMem',
+                'host': hostManuel,
+                'total': Number(violation.total),
+                'used': Number(violation.used),
+                'free': Number(violation.free),
+                'shared': Number(violation.shared),
+                'buffcache': Number(violation.buffercache),
+                'available': Number(violation.available),
             }
             
         );
         
-       console.log('DATOS ENVIADOS A NEWRELIC:'+options);
+       console.log('DATOS ENVIADOS A NEWRELIC Reinier:'+options);
        request.post(options);
         
         
     
     }
     
- })
+ }
 
 
-
- app.get('/consultaup', function(req, res) {    const request = require('request');    
-    var options = {    url: 'http://localhost:3000/api/up',    };    
-    var violations = null;    // Get open violations    
-    request.get(options,    
-        function(err, response, body) {        
-            if (response.statusCode == 200) {            
-                var data = JSON.parse(body);            
-                violations = data;            
-                insertViolationEvent(violations);     
-             }  
+ function consultaUP(){ 
+ var options = {    url: 'http://localhost:3000/api/up',    };    
+ var violations = null;    // Get open violations    
+ request.get(options,    
+     function(err, response, body) {        
+         if (response.statusCode == 200) {            
+             var data = JSON.parse(body);            
+             violations = data;            
+             insertViolationEvent(violations);     
+          }  
         }  
   ); 
 function insertViolationEvent(violation) {       
-    var headers = {
-         'Content-Type': 'json/application', 
-         'X-Insert-Key': insertKey 
-       };
+ var headers = {
+      'Content-Type': 'json/application', 
+      'X-Insert-Key': insertKey 
+    };
     var options = {       
-     url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',       
-     headers: headers    }  
-     options['body'] = JSON.stringify(    {   
-             'eventType': 'PruebaIvan',
-             'host':hostManuel,
-    	     'hora':violation.hora,
-             'updown':violation.updown,
-             'uptime':violation.uptime,
-             'usuarios':violation.usuarios,
-             'unmin': violation.unmin,     
-             'cinmin': violation.cinmin,      
-             'quinmin': violation.quinmin,
-	            
-        });  
+         url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',       
+         headers: headers    }  
+         options['body'] = JSON.stringify(    {   
+                'eventType': 'PruebaIvan',
+                'host':hostManuel,
+            	'hora':violation.hora,
+                'updown':violation.updown,
+                'uptime':violation.uptime,
+                'usuarios':violation.usuarios,
+                'unmin': violation.unmin,     
+                'cinmin': violation.cinmin,      
+                'quinmin': violation.quinmin,
+                    
+            });  
 
-        console.log('DATOS ENVIADOS A NEWRELIC:'+options);   
-        request.post(options);    }})
-// iniciamos nuestro servidor
-app.listen(port)
-console.log('Front escuchando en el puerto ' + port)
+     console.log('DATOS ENVIADOS A NEWRELIC Ivan:'+options);   
+     request.post(options);    
+    }
+}

@@ -19,7 +19,7 @@ const patronCPU = process.env.PATRON_CPU;
 const patronDF = process.env.PATRON_DF;
 const patronMemoria = process.env.PATRON_MEMORIA;
 const patronUP =  process.env.PATRON_UP;
-console.log(hostJose);
+
 app.get('/api/cpu', function(req, res) {
   
       const user = 'ubuntu';
