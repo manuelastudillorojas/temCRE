@@ -10,7 +10,7 @@ const insertKey = process.env.INSERT_KEY;
 
 //var job = new CronJob('* * * * *', function() {
 
-var job = new CronJob('* * * * *', function() {
+var job = new CronJob('*/15 * * * *', function() {
 
     console.log('INICIANDO SECUENCIA DE DATOS');
 
@@ -56,7 +56,7 @@ function getCpu() {
     
     options['body'] = JSON.stringify(
     {
-        'eventType': 'ManoloPrueba',
+        'eventType': 'AgentRam',
         'usr': Number(violation.usr),
         'host': hostManuel,
         'sys': Number(violation.sys),
@@ -107,7 +107,7 @@ function getConsultaDF() {
         options['body'] = JSON.stringify(
 
             {
-                'eventType': 'JoseDF',
+                'eventType': 'AgentCPU',
                 'host': hostManuel,
                 'mount': violation.mount,
                 'tamano': Number(violation.tamano),
@@ -160,7 +160,7 @@ function consultaMemoria(){
         options['body'] = JSON.stringify(
         
             {
-                'eventType': 'ReinierMem',
+                'eventType': 'AgentMem',
                 'host': hostManuel,
                 'total': Number(violation.total),
                 'used': Number(violation.used),
@@ -203,7 +203,7 @@ function insertViolationEvent(violation) {       
          url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',       
          headers: headers    }  
          options['body'] = JSON.stringify(    {   
-                'eventType': 'PruebaIvan',
+                'eventType': 'AgentUpTime',
                 'host':hostManuel,
             	'hora':violation.hora,
                 'updown':violation.updown,
