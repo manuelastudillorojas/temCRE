@@ -46,7 +46,7 @@ app.get('/consultacpu', function(req, res) {
     options['body'] = JSON.stringify(
     {
 
-        'eventType': 'ManoloPrueba',
+        'eventType': 'AgentCpu',
         'usr': Number(violation.usr),
         'host': hostManuel,
         'sys': Number(violation.sys),
@@ -107,7 +107,7 @@ app.get('/consultadf', function(req, res) {
         options['body'] = JSON.stringify(
 
             {
-                'eventType': 'JoseDF',
+                'eventType': 'AgentDisc',
                 'host': hostManuel,
                 'mount': violation.mount,
                 'tamano': Number(violation.tamano),
@@ -162,7 +162,7 @@ app.get('/consultamemoria', function(req, res) {
         
             {
             
-            'eventType': 'ReinierMem',
+            'eventType': 'AgentRam',
             'host': hostManuel,
             'total': Number(violation.total),
             'used': Number(violation.used),
@@ -207,7 +207,7 @@ function insertViolationEvent(violation) {       
      url: 'https://insights-collector.newrelic.com/v1/accounts/3270870/events',       
      headers: headers    }  
      options['body'] = JSON.stringify(    {   
-             'eventType': 'PruebaIvan',
+             'eventType': 'AgentUpTime',
              'host':hostManuel,
     	     'hora':violation.hora,
              'updown':violation.updown,
