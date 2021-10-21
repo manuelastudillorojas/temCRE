@@ -156,7 +156,7 @@ app.get('/api/memoria', function(req, res) {
   
   let ourout = "";
   
-  ssh.exec("free -m | tail -n 3 | awk '{ print $1 "+ ' " "'+ " $2 "+ ' " "'+ " $3 "+ ' " "'+ " $4 "+ ' " "'+ " $5 "+ ' " "'+ " $6 }'", {
+  ssh.exec("free -k | tail -n 3 | awk '{ print $1 "+ ' " "'+ " $2 "+ ' " "'+ " $3 "+ ' " "'+ " $4 "+ ' " "'+ " $5 "+ ' " "'+ " $6 }'", {
   
   exit: function() {
   

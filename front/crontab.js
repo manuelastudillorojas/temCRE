@@ -10,7 +10,7 @@ const insertKey = process.env.INSERT_KEY;
 
 //var job = new CronJob('* * * * *', function() {
 
-var job = new CronJob('*/15 * * * *', function() {
+var job = new CronJob('* * * * *', function() {
 
     console.log('INICIANDO SECUENCIA DE DATOS');
 
@@ -56,7 +56,7 @@ function getCpu() {
     
     options['body'] = JSON.stringify(
     {
-        'eventType': 'AgentRam',
+        'eventType': 'AgentCPU',
         'usr': Number(violation.usr),
         'host': hostManuel,
         'sys': Number(violation.sys),
@@ -107,7 +107,7 @@ function getConsultaDF() {
         options['body'] = JSON.stringify(
 
             {
-                'eventType': 'AgentCPU',
+                'eventType': 'AgentDisco',
                 'host': hostManuel,
                 'mount': violation.mount,
                 'tamano': Number(violation.tamano),
@@ -160,7 +160,7 @@ function consultaMemoria(){
         options['body'] = JSON.stringify(
         
             {
-                'eventType': 'AgentMem',
+                'eventType': 'AgentMemoria',
                 'host': hostManuel,
                 'total': Number(violation.total),
                 'used': Number(violation.used),
