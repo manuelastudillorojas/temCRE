@@ -56,7 +56,7 @@ function getCpu() {
     
     options['body'] = JSON.stringify(
     {
-        'eventType': 'AgentCPU',
+        'eventType': 'AgentUsoCPU',
         'usr': Number(violation.usr),
         'host': hostManuel,
         'sys': Number(violation.sys),
